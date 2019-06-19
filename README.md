@@ -159,7 +159,7 @@ Note that you need 230G disk space for all the augmented data. To save space,
 you can set AUG_COPY to a smaller number. For example, setting *aug_copy* to 30
 and 10 will leads to an accuracy of 94.30 and 93.64 respectively on CIFAR-10.
 
-Alternatively, you can generate the augmented examples by running
+Alternatively, you can generate the augmented examples yourself by running
 
 ```shell
 AUG_COPY=100
@@ -170,7 +170,8 @@ bash scripts/preprocess.sh --aug_copy=${AUG_COPY}
 
 We provide different commands to train UDA on TPUs and GPUs since TPUs and GPUs
 have different implementations for batch norm. All of the scripts can achieve
-the current SOTA results on CIFAR-10 and SVHN.
+the current SOTA results on CIFAR-10 with 4,000 examples and SVHN with 1,000
+examples.
 
 GPU command:
 
@@ -213,8 +214,8 @@ to really push the performance, here are suggestions about hyperparamters:
 
 *   It works well to set the weight on unsupervised objective *'unsup_coeff'*
     to 1.
-*   Use a lower learning rate than pure supervised learning because the
-    supervised loss term and the unsupervised loss term are added.
+*   Use a lower learning rate than pure supervised learning because there are
+    two loss terms computed on labeled data and unlabeled data respecitively.
 *   If your have an extremely small amount of data, try to tweak
     'uda_softmax_temp' and 'uda_confidence_thresh' a bit. For more details about
     these two hyperparameters, search the "Confidence-based masking" and
@@ -222,7 +223,7 @@ to really push the performance, here are suggestions about hyperparamters:
 *   Effective augmentation for supervised learning usually works well for UDA.
 *   Enumerating the TSA schedules (including not using TSA) is helpful.
 *   For some tasks, we observed that increasing the batch size for the
-    unsupervised objective leads to better performance. In some cases, small
+    unsupervised objective leads to better performance. For other tasks, small
     batch sizes also work well. For example, when we run UDA with GPU on
     CIFAR-10, the best batch size for the unsupervised objective is 160.
 

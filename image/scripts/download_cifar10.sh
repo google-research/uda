@@ -14,8 +14,8 @@
 # limitations under the License.
 #!/bin/bash
 task_name=cifar10
-mkdir -p proc_data/${task_name}
-cd proc_data/${task_name}
+mkdir -p data/proc_data/${task_name}
+cd data/proc_data/${task_name}
 aug_copy=$1
 
 url_prefix=https://storage.googleapis.com/uda_model/image/proc_data/${task_name}
