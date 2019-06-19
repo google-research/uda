@@ -89,8 +89,9 @@ bash scripts/run_base_uda.sh --train_batch_size=8 --max_seq_length=${MAX_SEQ_LEN
 
 ### Run on Cloud TPU v3-32 Pod to achieve SOTA performance
 
-The best performance in the paper is achieved by using BERT large and a
-max_seq_length of 512. If you have access to Google Cloud TPU v3-32 Pod, try:
+The best performance in the paper is achieved by using a max_seq_length of 512
+and initializing with BERT large finetuned on in-domain unsupervised data. If
+you have access to Google Cloud TPU v3-32 Pod, try:
 
 ```shell
 MAX_SEQ_LENGTH=512

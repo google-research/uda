@@ -34,6 +34,6 @@ for i in `seq 0 $aug_copy_end`;
 do
   for j in `seq 0 17`;
   do
-    wget $url_prefix/unsup-$i.tfrecord.$i
+    wget $url_prefix/unsup-$i.tfrecord.$j
   done
 done
