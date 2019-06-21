@@ -28,7 +28,7 @@ python main.py \
   --task_name=${task_name} \
   --sup_size=4000 \
   --unsup_ratio=10 \
-  --data_dir=data/${task_name} \
+  --data_dir=${data_dir} \
   --model_dir=${model_dir} \
   --train_steps=400000 \
   $@

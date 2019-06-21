@@ -30,7 +30,7 @@ flags.DEFINE_string(
 flags.DEFINE_string(
     "output_file", "", "paraphrased sentences.")
 flags.DEFINE_string(
-    "doc_len_file", "", "The file that records the length infomation.")
+    "doc_len_file", "", "The file that records the length information.")
 
 
 def main(argv):

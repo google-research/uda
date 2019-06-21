@@ -23,7 +23,7 @@ python main.py \
   --task_name=${task_name} \
   --sup_size=4000 \
   --unsup_ratio=5 \
-  --data_dir=data/${task_name} \
+  --data_dir=data/proc_data/${task_name} \
   --model_dir=ckpt/cifar10_gpu \
   --train_steps=200000 \
   $@
