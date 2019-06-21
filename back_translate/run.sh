@@ -48,13 +48,13 @@ mkdir -p ${forward_gen_dir}
 mkdir -p ${backward_gen_dir}
 mkdir -p ${doc_len_dir}
 mkdir -p ${para_dir}
-
+mkdir -p ${forward_src_dir}
 
 echo "*** spliting paragraph ***"
 # install nltk 
 python split_paragraphs.py \
   --input_file=${input_file} \
-  --output_file=${forward_src_dir}/file_${worker_id}_of_${replicas}.txt
+  --output_file=${forward_src_dir}/file_${worker_id}_of_${replicas}.txt \
   --doc_len_file=${doc_len_dir}/doc_len_${worker_id}_of_${replicas}.json \
   --replicas=${replicas} \
   --worker_id=${worker_id} \
