@@ -49,7 +49,7 @@ mkdir -p ${forward_gen_dir}
 mkdir -p ${backward_gen_dir}
 mkdir -p ${doc_len_dir}
 mkdir -p ${para_dir}
-
+mkdir -p ${forward_src_dir}
 
 echo "*** spliting paragraph ***"
 # install nltk 
