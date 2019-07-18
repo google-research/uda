@@ -200,7 +200,7 @@ Google Cloud TPU v3-32/v3-32 Pod command:
 
 ```shell
 # UDA accuracy: 97.1% - 97.8%
-bash scripts/run_cifar10_tpu_32_core.sh --aug_copy=${AUG_COPY}
+bash scripts/run_svhn_tpu_32_core.sh --aug_copy=${AUG_COPY}
 ```
 
 Our hyperparameters for SVHN are basically the same as CIFAR-10. To use GPUs or
@@ -240,7 +240,7 @@ Please cite this paper if you use UDA.
 
 ```
 @article{xie2019unsupervised,
-  title={Unsupervised data augmentation},
+  title={Unsupervised Data Augmentation for Consistency Training},
   author={Xie, Qizhe and Dai, Zihang and Hovy, Eduard and Luong, Minh-Thang and Le, Quoc V},
   journal={arXiv preprint arXiv:1904.12848},
   year={2019}

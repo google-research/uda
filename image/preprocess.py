@@ -104,7 +104,6 @@ def save_tfrecord(example_list, out_path, max_shard_size=4096):
   shard_size = 0
   record_writer = obtain_tfrecord_writer(out_path, shard_cnt)
   for example in example_list:
-    record_writer.write(example.SerializeToString())
     if shard_size >= max_shard_size:
       record_writer.close()
       shard_cnt += 1
@@ -250,6 +249,7 @@ def proc_and_dump_unsup_data(sub_set_data, aug_copy_num):
   ori_images = sub_set_data["images"].copy()
 
   image_idx = np.arange(len(ori_images))
+  np.random.seed(0)
   np.random.shuffle(image_idx)
   ori_images = ori_images[image_idx]
 

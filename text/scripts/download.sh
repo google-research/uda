@@ -14,15 +14,6 @@
 # limitations under the License.
 #!/bin/bash
 
-# **** download IMDB data and convert it to csv files ****
-mkdir data/IMDB_raw
-cd data/IMDB_raw
-wget https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz
-tar xzvf aclImdb_v1.tar.gz && rm aclImdb_v1.tar.gz
-cd ../..
-python utils/imdb_format.py --raw_data_dir=data/IMDB_raw/aclImdb --train_id_path=data/IMDB_raw/train_id_list.txt --output_dir=data/IMDB_raw/csv
-
-
 # **** download pretrained models ****
 mkdir pretrained_models
 # download bert base
@@ -39,9 +30,16 @@ unzip imdb_bert_ft.zip && rm imdb_bert_ft.zip
 cd ..
 
 # **** download back translated data ****
-mkdir -p data/back_translation 
+mkdir -p data/back_translation
 cd data/back_translation
 wget https://storage.googleapis.com/uda_model/text/imdb_back_trans.zip
 unzip imdb_back_trans.zip && rm imdb_back_trans.zip
 cd ../../
 
+# **** download IMDB data and convert it to csv files ****
+mkdir data/IMDB_raw
+cd data/IMDB_raw
+wget https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz
+tar xzvf aclImdb_v1.tar.gz && rm aclImdb_v1.tar.gz
+cd ../..
+python utils/imdb_format.py --raw_data_dir=data/IMDB_raw/aclImdb --train_id_path=data/IMDB_raw/train_id_list.txt --output_dir=data/IMDB_raw/csv

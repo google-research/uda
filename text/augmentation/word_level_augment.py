@@ -194,8 +194,8 @@ class TfIdfWordRep(EfficientRandomGen):
     replace_prob = self.get_replace_prob(all_words)
     example.word_list_a = self.replace_tokens(
         example.word_list_a,
-        replace_prob[:len(example.word_list_a)],
-        show_example)
+        replace_prob[:len(example.word_list_a)]
+        )
     if example.text_b:
       example.word_list_b = self.replace_tokens(
           example.word_list_b,
