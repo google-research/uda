@@ -155,7 +155,7 @@ AUG_COPY=100
 bash scripts/download_cifar10.sh ${AUG_COPY}
 ```
 
-Note that you need 230G disk space for all the augmented data. To save space,
+Note that you need 120G disk space for all the augmented data. To save space,
 you can set AUG_COPY to a smaller number. For example, setting *aug_copy* to 30
 and 10 will leads to an accuracy of 94.30 and 93.64 respectively on CIFAR-10.
 

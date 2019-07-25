@@ -207,6 +207,7 @@ def get_data_by_size_lim(images, labels, sup_size):
       chosen_images = images[:sup_size]
       chosen_labels = labels[:sup_size]
     else:
+      np.random.seed(0)
       perm = np.arange(images.shape[0])
       np.random.shuffle(perm)
       chosen_images = images[perm][:sup_size]
@@ -249,7 +250,6 @@ def proc_and_dump_unsup_data(sub_set_data, aug_copy_num):
   ori_images = sub_set_data["images"].copy()
 
   image_idx = np.arange(len(ori_images))
-  np.random.seed(0)
   np.random.shuffle(image_idx)
   ori_images = ori_images[image_idx]
 

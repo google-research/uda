@@ -36,6 +36,8 @@ import data
 import utils
 
 from autoaugment.wrn import build_wrn_model
+from autoaugment.shake_drop import build_shake_drop_model
+from autoaugment.shake_shake import build_shake_shake_model
 
 
 # TPU related
@@ -142,8 +144,7 @@ flags.DEFINE_integer(
 # Model config
 flags.DEFINE_enum(
     "model_name", default="wrn",
-    enum_values=["wrn",
-                 ],
+    enum_values=["wrn", "shake_shake_32", "shake_shake_96", "shake_shake_112", "pyramid_net"],
     help="Name of the model")
 flags.DEFINE_integer(
     "num_classes", default=10,
@@ -357,8 +358,8 @@ def get_model_fn(hparams):
       if FLAGS.ent_min_coeff > 0:
         ent_min_coeff = FLAGS.ent_min_coeff
         metric_dict["unsup/ent_min_coeff"] = ent_min_coeff
-        per_example_ent = get_ent(ori_logits)
-        top_prob = tf.reduce_max(ori_prob, axis=-1)
+        per_example_ent = get_ent(aug_logits)
+        top_prob = tf.reduce_max(aug_prob, axis=-1)
         ent_min_loss = per_example_ent.mean()
 
         total_loss = total_loss + ent_min_coeff * ent_min_loss
@@ -512,7 +513,7 @@ def train(hparams):
     elif FLAGS.task_name == "svhn":
       eval_size = 26032
     else:
-      raise ValueError, "You need to specify the size of your test set."
+      assert False, "You need to specify the size of your test set."
     eval_steps = eval_size // FLAGS.eval_batch_size
 
   ##### Get model function
@@ -566,6 +567,17 @@ def main(_):
   if FLAGS.model_name == "wrn":
     hparams.add_hparam("model_name", "wrn")
     hparams.add_hparam("wrn_size", FLAGS.wrn_size)
+  elif FLAGS.model_name == "shake_shake_32":
+    hparams.add_hparam("model_name", "shake_shake")
+    hparams.add_hparam("shake_shake_widen_factor", 2)
+  elif FLAGS.model_name == "shake_shake_96":
+    hparams.add_hparam("model_name", "shake_shake")
+    hparams.add_hparam("shake_shake_widen_factor", 6)
+  elif FLAGS.model_name == "shake_shake_112":
+    hparams.add_hparam("model_name", "shake_shake")
+    hparams.add_hparam("shake_shake_widen_factor", 7)
+  elif FLAGS.model_name == "pyramid_net":
+    hparams.add_hparam("model_name", "pyramid_net")
   else:
     raise ValueError("Not Valid Model Name: %s" % FLAGS.model_name)
 

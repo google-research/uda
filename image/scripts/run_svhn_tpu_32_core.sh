@@ -30,7 +30,8 @@ python main.py \
   --task_name=${task_name} \
   --sup_size=1000 \
   --aug_copy=100 \
-  --unsup_ratio=30 \
+  --unsup_ratio=40 \
+  --weight_decay_rate=7e-4 \
   --tsa=linear_schedule \
   --data_dir=${data_dir} \
   --model_dir=${model_dir} \
