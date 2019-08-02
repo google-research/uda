@@ -358,11 +358,10 @@ def get_model_fn(hparams):
       if FLAGS.ent_min_coeff > 0:
         ent_min_coeff = FLAGS.ent_min_coeff
         metric_dict["unsup/ent_min_coeff"] = ent_min_coeff
-        per_example_ent = get_ent(aug_logits)
-        top_prob = tf.reduce_max(aug_prob, axis=-1)
-        ent_min_loss = per_example_ent.mean()
-
+        per_example_ent = get_ent(ori_logits)
+        ent_min_loss = tf.reduce_mean(per_example_ent)
         total_loss = total_loss + ent_min_coeff * ent_min_loss
+
       avg_unsup_loss = tf.reduce_mean(aug_loss)
       total_loss += FLAGS.unsup_coeff * avg_unsup_loss
       metric_dict["unsup/loss"] = avg_unsup_loss

@@ -203,10 +203,6 @@ Google Cloud TPU v3-32/v3-32 Pod command:
 bash scripts/run_svhn_tpu_32_core.sh --aug_copy=${AUG_COPY}
 ```
 
-Our hyperparameters for SVHN are basically the same as CIFAR-10. To use GPUs or
-Cloud TPU v2/v3, you can take the script for CIFAR-10 and change *task_name* to
-svhn, change *sup_size* to 1000 and set *learning_rate* to 0.03 or 0.05.
-
 ## General guidelines for setting hyperparameters:
 
 UDA works out-of-box and does not require extensive hyperparameter tuning, but
