@@ -48,7 +48,11 @@ Cloud TPU.
 
 ## Requirements
 
-The code is tested on Python 2.7 and Tensorflow 1.13.
+The code is tested on Python 2.7 and Tensorflow 1.13. After installing
+Tensorflow, run the following command to install dependencies:
+```shell
+pip install --user absl-py
+```
 
 ## Text classifiation
 
