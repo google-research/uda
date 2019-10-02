@@ -21,14 +21,14 @@ CIFAR-10 with 4,000 labeled examples and SVHN with 1,000 labeled examples:
 Model            | CIFAR-10     | SVHN
 ---------------- | :----------: | :----------:
 ICT (Prev. SOTA) | 7.66±.17     | 3.53±.07
-UDA              | **5.27±.11** | **2.46±.17**
+UDA              | **5.29±.25** | **2.55±.09**
 
 It leads to significant improvements on ImageNet with 10% labeled data.
 
 Model     | top-1 accuracy | top-5 accuracy
 --------- | :------------: | :------------:
 ResNet-50 | 55.09          | 77.26
-UDA       | **68.66**      | **88.52**
+UDA       | **68.78**      | **88.80**
 
 ## How it works
 
@@ -231,7 +231,7 @@ to really push the performance, here are suggestions about hyperparamters:
 
 A large portion of the code is taken from
 [BERT](https://github.com/google-research/bert) and
-[AutoAugment](https://github.com/tensorflow/models/tree/master/research/autoaugment).
+[RandAugment](https://github.com/tensorflow/models/tree/master/research/autoaugment).
 Thanks!
 
 ## Citation

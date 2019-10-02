@@ -18,7 +18,7 @@ mkdir -p data/proc_data/${task_name}
 cd data/proc_data/${task_name}
 aug_copy=$1
 
-url_prefix=https://storage.googleapis.com/uda_model/image/proc_data_v1.1/${task_name}
+url_prefix=https://storage.googleapis.com/uda_model/image/proc_data_v2/${task_name}
 
 wget $url_prefix/train-size_4000.tfrecord.0
 

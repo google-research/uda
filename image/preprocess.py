@@ -35,8 +35,8 @@ import absl.logging as _logging  # pylint: disable=unused-import
 import scipy.io
 import tensorflow as tf
 
-from autoaugment import policies as found_policies
-from autoaugment import augmentation_transforms
+from randaugment import policies as found_policies
+from randaugment import augmentation_transforms
 
 FLAGS = flags.FLAGS
 
@@ -261,9 +261,9 @@ def proc_and_dump_unsup_data(sub_set_data, aug_copy_num):
   ori_images = (ori_images - mean) / std
 
   if FLAGS.task_name == "cifar10":
-    aug_policies = found_policies.cifar10_policies()
+    aug_policies = found_policies.randaug_policies()
   elif FLAGS.task_name == "svhn":
-    aug_policies = found_policies.svhn_policies()
+    aug_policies = found_policies.randaug_policies()
 
   example_list = []
   for image in ori_images:

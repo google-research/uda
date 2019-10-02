@@ -31,13 +31,13 @@ import absl.logging as _logging  # pylint: disable=unused-import
 
 import tensorflow as tf
 
-from autoaugment import custom_ops as ops
+from randaugment import custom_ops as ops
 import data
 import utils
 
-from autoaugment.wrn import build_wrn_model
-from autoaugment.shake_drop import build_shake_drop_model
-from autoaugment.shake_shake import build_shake_shake_model
+from randaugment.wrn import build_wrn_model
+from randaugment.shake_drop import build_shake_drop_model
+from randaugment.shake_shake import build_shake_shake_model
 
 
 # TPU related

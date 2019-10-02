@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from autoaugment import custom_ops as ops
+from randaugment import custom_ops as ops
 
 import numpy as np
 import tensorflow as tf
