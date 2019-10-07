@@ -247,6 +247,17 @@ Please cite this paper if you use UDA.
 }
 ```
 
+Please cite this paper if you use UDA for images.
+
+```
+@article{cubuk2019randaugment,
+  title={RandAugment: Practical data augmentation with no separate search},
+  author={Cubuk, Ekin D and Zoph, Barret and Shlens, Jonathon and Le, Quoc V},
+  journal={arXiv preprint arXiv:1909.13719},
+  year={2019}
+}
+```
+
 ## Disclaimer
 
 This is not an officially supported Google product.
