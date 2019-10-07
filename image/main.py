@@ -231,7 +231,20 @@ def build_model(inputs, num_classes, is_training, update_bn, hparams):
     The logits of the image model.
   """
   scopes = setup_arg_scopes(is_training)
-  with contextlib.nested(*scopes):
+
+  try:
+      from contextlib import nested
+  except ImportError:
+      from contextlib import ExitStack, contextmanager
+
+      @contextmanager
+      def nested(*contexts):
+          with ExitStack() as stack:
+              for ctx in contexts:
+                  stack.enter_context(ctx)
+              yield contexts
+
+  with nested(*scopes):
     if hparams.model_name == "pyramid_net":
       logits = build_shake_drop_model(
           inputs, num_classes, is_training)
@@ -241,6 +254,7 @@ def build_model(inputs, num_classes, is_training, update_bn, hparams):
     elif hparams.model_name == "shake_shake":
       logits = build_shake_shake_model(
           inputs, num_classes, hparams, is_training)
+
   return logits
 
 
