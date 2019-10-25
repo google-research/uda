@@ -121,7 +121,7 @@ pip install --user tensor2tensor==1.13.4
 ```
 
 The following command translates the provided example file. It automatically
-splits paraphrases into sentences, translates English sentences to French and
+splits paragraphs into sentences, translates English sentences to French and
 then translates them back into English. Finally, it composes the paraphrased
 sentences into paragraphs. Go to the *back_translate* directory and run:
 
