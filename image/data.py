@@ -34,11 +34,13 @@ FLAGS = flags.FLAGS
 def format_sup_filename(split, sup_size=-1):
   if split == "test":
     return "test.tfrecord"
-  elif split == "train":
+  elif split == "train" or split == "dev":
     if sup_size == -1:
-      return "train-full.tfrecord"
+      return "{}-full.tfrecord".format(split)
     else:
-      return "train-size_{:d}.tfrecord".format(sup_size)
+      return "{}-size_{:d}.tfrecord".format(split, sup_size)
+  else:
+    assert False
 
 
 def format_unsup_filename(aug_copy_num):

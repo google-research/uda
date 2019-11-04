@@ -53,11 +53,11 @@ random_seed = np.random.randint(0, 10000)
 def format_sup_filename(split, sup_size=-1):
   if split == "test":
     return "test.tfrecord"
-  elif split == "train":
+  elif split == "train" or split == "dev":
     if sup_size == -1:
-      return "train-full.tfrecord".format(sup_size)
+      return "{}-full.tfrecord".format(split, sup_size)
     else:
-      return "train-size_{:d}.tfrecord".format(sup_size)
+      return "{}-size_{:d}.tfrecord".format(split, sup_size)
 
 
 def format_unsup_filename(aug_copy_num):
@@ -81,7 +81,6 @@ def get_raw_data_filenames(split):
       return ["test_batch"]
   else:
     assert False
-  return file_names
 
 
 def read_pickle_from_file(filename):
@@ -186,10 +185,12 @@ def load_dataset():
   return data
 
 
-def get_data_by_size_lim(images, labels, sup_size):
+def get_data_by_size_lim(images, labels, sup_size, return_rest=False):
   if FLAGS.use_equal_split:
     chosen_images = []
     chosen_labels = []
+    rest_images = []
+    rest_labels = []
     num_classes = 10
     assert sup_size % num_classes == 0
     cur_stats = collections.defaultdict(int)
@@ -199,32 +200,35 @@ def get_data_by_size_lim(images, labels, sup_size):
         chosen_images += [images[i]]
         chosen_labels += [labels[i]]
         cur_stats[label] += 1
+      else:
+        rest_images += [images[i]]
+        rest_labels += [labels[i]]
     chosen_images = np.array(chosen_images)
     chosen_labels = np.array(chosen_labels)
+    rest_images = np.array(rest_images)
+    rest_labels = np.array(rest_labels)
   else:
     # use the same labeled data as in AutoAugment
     if FLAGS.task_name == "cifar10":
       chosen_images = images[:sup_size]
       chosen_labels = labels[:sup_size]
+      rest_images = images[sup_size:]
+      rest_labels = labels[sup_size:]
     else:
       np.random.seed(0)
       perm = np.arange(images.shape[0])
       np.random.shuffle(perm)
       chosen_images = images[perm][:sup_size]
       chosen_labels = labels[perm][:sup_size]
-  return chosen_images, chosen_labels
-
-
-def proc_and_dump_sup_data(sub_set_data, split, sup_size=-1):
-  images = sub_set_data["images"]
-  labels = sub_set_data["labels"]
-  if sup_size != -1:
-    chosen_images, chosen_labels = get_data_by_size_lim(
-        images, labels, sup_size)
+      rest_images = images[perm][sup_size:]
+      rest_labels = labels[perm][sup_size:]
+  if return_rest:
+    return chosen_images, chosen_labels, rest_images, rest_labels
   else:
-    chosen_images = images
-    chosen_labels = labels
+    return chosen_images, chosen_labels
 
+
+def process_and_save_sup_data(chosen_images, chosen_labels, split, sup_size=-1):
   chosen_images = chosen_images / 255.0
   mean, std = augmentation_transforms.get_mean_and_std()
   chosen_images = (chosen_images - mean) / std
@@ -244,6 +248,25 @@ def proc_and_dump_sup_data(sub_set_data, split, sup_size=-1):
   tf.logging.info(">> saving {} {} examples to {}".format(
       len(example_list), split, out_path))
   save_tfrecord(example_list, out_path)
+
+
+def proc_and_dump_sup_data(sub_set_data, split, sup_size=-1):
+  images = sub_set_data["images"]
+  labels = sub_set_data["labels"]
+  if sup_size != -1:
+    chosen_images, chosen_labels = get_data_by_size_lim(
+        images, labels, sup_size)
+  else:
+    chosen_images = images
+    chosen_labels = labels
+  if split == "train" and FLAGS.dev_size != -1:
+    dev_images, dev_labels, train_images, train_labels = get_data_by_size_lim(
+        chosen_images, chosen_labels, FLAGS.dev_size,
+        return_rest=True)
+    process_and_save_sup_data(train_images, train_labels, "train", train_images.shape[0])
+    process_and_save_sup_data(dev_images, dev_labels, "dev", dev_images.shape[0])
+  else:
+    process_and_save_sup_data(chosen_images, chosen_labels, split)
 
 
 def proc_and_dump_unsup_data(sub_set_data, aug_copy_num):
@@ -338,6 +361,9 @@ if __name__ == "__main__":
   flags.DEFINE_integer(
       "sup_size", -1, "Number of supervised pairs to use."
       "-1: all training samples. 0: no supervised data.")
+  flags.DEFINE_integer(
+      "dev_size", -1, "Number of dev examples to use."
+      "-1: no dev set.")
 
   # configs for processing unsupervised data
   flags.DEFINE_integer(

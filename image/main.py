@@ -113,10 +113,9 @@ flags.DEFINE_bool(
 flags.DEFINE_bool(
     "do_eval", default=False,
     help="Whether to run eval on the test set.")
-flags.DEFINE_bool(
-    "do_eval_along_training", default=False,
-    help="Whether to run eval on the test set during training. "
-    "This is only used to debug.")
+flags.DEFINE_integer(
+    "dev_size", default=-1,
+    help="dev set size.")
 flags.DEFINE_bool(
     "verbose", default=False,
     help="Whether to print additional information.")
@@ -500,7 +499,7 @@ def train(hparams):
   ##### Create input function
   if FLAGS.unsup_ratio == 0:
     FLAGS.aug_copy = 0
-  if FLAGS.do_eval_along_training:
+  if FLAGS.dev_size != -1:
     FLAGS.do_train = True
     FLAGS.do_eval = True
   if FLAGS.do_train:
@@ -514,19 +513,29 @@ def train(hparams):
     )
 
   if FLAGS.do_eval:
-    eval_input_fn = data.get_input_fn(
-        data_dir=FLAGS.data_dir,
-        split="test",
-        task_name=FLAGS.task_name,
-        sup_size=-1,
-        unsup_ratio=0,
-        aug_copy=0)
-    if FLAGS.task_name == "cifar10":
-      eval_size = 10000
-    elif FLAGS.task_name == "svhn":
-      eval_size = 26032
+    if FLAGS.dev_size != -1:
+      eval_input_fn = data.get_input_fn(
+          data_dir=FLAGS.data_dir,
+          split="dev",
+          task_name=FLAGS.task_name,
+          sup_size=FLAGS.dev_size,
+          unsup_ratio=0,
+          aug_copy=0)
+      eval_size = FLAGS.dev_size
     else:
-      assert False, "You need to specify the size of your test set."
+      eval_input_fn = data.get_input_fn(
+          data_dir=FLAGS.data_dir,
+          split="test",
+          task_name=FLAGS.task_name,
+          sup_size=-1,
+          unsup_ratio=0,
+          aug_copy=0)
+      if FLAGS.task_name == "cifar10":
+        eval_size = 10000
+      elif FLAGS.task_name == "svhn":
+        eval_size = 26032
+      else:
+        assert False, "You need to specify the size of your test set."
     eval_steps = eval_size // FLAGS.eval_batch_size
 
   ##### Get model function
@@ -534,8 +543,8 @@ def train(hparams):
   estimator = utils.get_TPU_estimator(FLAGS, model_fn)
 
   #### Training
-  if FLAGS.do_eval_along_training:
-    tf.logging.info("***** Running training & evaluation *****")
+  if FLAGS.dev_size != -1:
+    tf.logging.info("***** Running training and validation *****")
     tf.logging.info("  Supervised batch size = %d", FLAGS.train_batch_size)
     tf.logging.info("  Unsupervised batch size = %d",
                     FLAGS.train_batch_size * FLAGS.unsup_ratio)
