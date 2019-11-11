@@ -29,13 +29,12 @@ python main.py \
   --tpu=${train_tpu_name} \
   --task_name=${task_name} \
   --sup_size=1000 \
-  --aug_copy=100 \
   --unsup_ratio=40 \
-  --weight_decay_rate=7e-4 \
+  --weight_decay_rate=5e-4 \
   --tsa=linear_schedule \
+  --learning_rate=0.05 \
   --data_dir=${data_dir} \
   --model_dir=${model_dir} \
-  --learning_rate=0.05 \
   $@
 
 # eval

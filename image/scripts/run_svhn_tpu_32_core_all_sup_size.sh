@@ -14,21 +14,29 @@
 # limitations under the License.
 #!/bin/bash
 
-tpu_name=node-2 # change this
-model_dir=gs://qizhex/uda/image/ckpt/tpu_8_core  # change this
+train_tpu_name=node-1 # change this
+eval_tpu_name=node-2 # change this
+model_dir=gs://qizhex/uda/image/ckpt/tpu_32_core  # change this
 
-task_name=cifar10
+task_name=svhn
 data_dir=gs://uda_model/image/proc_data/${task_name}
 
-python main.py \
-  --use_tpu=True \
-  --do_train=True \
-  --do_eval=True \
-  --tpu=${tpu_name} \
-  --task_name=${task_name} \
-  --sup_size=4000 \
-  --unsup_ratio=10 \
-  --data_dir=${data_dir} \
-  --model_dir=${model_dir} \
-  --train_steps=400000 \
-  $@
+
+# 4000, 2000, 1000, 500, 250
+for sup_size in 4000 2000 1000 500 250;
+do
+  python main.py \
+    --use_tpu=True \
+    --do_train=True \
+    --do_eval=False \
+    --tpu=${train_tpu_name} \
+    --task_name=${task_name} \
+    --sup_size=${sup_size} \
+    --data_dir=${data_dir} \
+    --model_dir=${model_dir} \
+    --unsup_ratio=40 \
+    --weight_decay_rate=5e-4 \
+    --tsa=linear_schedule \
+    --learning_rate=0.05 \
+    $@
+done

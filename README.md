@@ -247,7 +247,7 @@ Please cite this paper if you use UDA.
 }
 ```
 
-Please cite this paper if you use UDA for images.
+Please also cite this paper if you use UDA for images.
 
 ```
 @article{cubuk2019randaugment,

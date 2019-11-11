@@ -30,6 +30,7 @@ python main.py \
   --task_name=${task_name} \
   --sup_size=4000 \
   --unsup_ratio=30 \
+  --ent_min_coeff=0.1 \
   --tsa=linear_schedule \
   --data_dir=${data_dir} \
   --model_dir=${model_dir} \

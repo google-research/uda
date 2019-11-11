@@ -21,22 +21,9 @@ model_dir=gs://qizhex/uda/image/ckpt/tpu_32_core  # change this
 task_name=cifar10
 data_dir=gs://uda_model/image/proc_data/${task_name}
 
-# 4000
-python main.py \
-  --use_tpu=True \
-  --do_train=True \
-  --do_eval=False \
-  --tpu=${train_tpu_name} \
-  --task_name=${task_name} \
-  --sup_size=4000 \
-  --unsup_ratio=30 \
-  --tsa=linear_schedule \
-  --data_dir=${data_dir} \
-  --model_dir=${model_dir} \
-  $@
 
-# 2000, 1000, 500
-for sup_size in 2000 1000 500;
+# 4000 2000, 1000, 500
+for sup_size in 4000 2000 1000 500;
 do
   python main.py \
     --use_tpu=True \
