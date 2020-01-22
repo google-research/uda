@@ -20,7 +20,10 @@ aug_copy=$1
 
 url_prefix=https://storage.googleapis.com/uda_model/image/proc_data_v2/${task_name}
 
-wget $url_prefix/train-size_4000.tfrecord.0
+for sup_size in 4000 2000 1000 500 250;
+do
+  wget $url_prefix/train-size_${sup_size}.tfrecord.0
+done
 
 for i in `seq 0 2`;
 do

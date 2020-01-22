@@ -21,7 +21,7 @@ CIFAR-10 with 4,000 labeled examples and SVHN with 1,000 labeled examples:
 Model            | CIFAR-10     | SVHN
 ---------------- | :----------: | :----------:
 ICT (Prev. SOTA) | 7.66±.17     | 3.53±.07
-UDA              | **5.29±.25** | **2.55±.09**
+UDA              | **4.89±.19** | **2.55±.09**
 
 It leads to significant improvements on ImageNet with 10% labeled data.
 
@@ -170,32 +170,18 @@ AUG_COPY=100
 bash scripts/preprocess.sh --aug_copy=${AUG_COPY}
 ```
 
-### CIFAR-10 with 4,000 examples
-
-We provide different commands to train UDA on TPUs and GPUs since TPUs and GPUs
-have different implementations for batch norm. All of the scripts can achieve
-the current SOTA results on CIFAR-10 with 4,000 examples and SVHN with 1,000
-examples.
+### CIFAR-10 with 250, 500, 1000, 2000, 4000 examples
 
 GPU command:
 
 ```shell
-# UDA accuracy: 94.5% - 94.9%
+# UDA accuracy: 
+# 4000: 95.11 +- 0.19
+# 2000: 94.80 +- 0.09
+# 1000: 94.45 +- 0.16
+# 500: 94.01 +- 0.23
+# 250: 92.77 +- 1.07
 bash scripts/run_cifar10_gpu.sh --aug_copy=${AUG_COPY}
-```
-
-Google Cloud TPU v3-8/v2-8 command:
-
-```shell
-# UDA accuracy: 94.6% - 95.0%
-bash scripts/run_cifar10_tpu_8_core.sh --aug_copy=${AUG_COPY}
-```
-
-Google Cloud TPU v3-32/v3-32 Pod command:
-
-```shell
-# UDA accuracy: 94.5% - 95.0%
-bash scripts/run_cifar10_tpu_32_core.sh --aug_copy=${AUG_COPY}
 ```
 
 ### SVHN with 1,000 examples
@@ -221,7 +207,6 @@ to really push the performance, here are suggestions about hyperparamters:
     these two hyperparameters, search the "Confidence-based masking" and
     "Softmax temperature control" in the paper.
 *   Effective augmentation for supervised learning usually works well for UDA.
-*   Enumerating the TSA schedules (including not using TSA) is helpful.
 *   For some tasks, we observed that increasing the batch size for the
     unsupervised objective leads to better performance. For other tasks, small
     batch sizes also work well. For example, when we run UDA with GPU on
