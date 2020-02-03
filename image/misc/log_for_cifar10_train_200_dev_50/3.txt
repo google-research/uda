@@ -1,2 +1,0 @@
-| run | test_acc_mean | test_acc_std |
-| 10  |     91.24     |     0.90     |
