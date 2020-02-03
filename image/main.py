@@ -23,6 +23,7 @@ import contextlib
 import os
 import time
 import json
+import functools
 
 import numpy as np
 
@@ -99,6 +100,9 @@ flags.DEFINE_integer(
     help="The coefficient on the UDA loss. "
     "setting unsup_coeff to 1 works for most settings. "
     "When you have extermely few samples, consider increasing unsup_coeff")
+flags.DEFINE_float(
+    'moving_average_decay', default=0.9999,
+    help=('Moving average decay rate.'))
 
 # Experiment (data/checkpoint/directory) config
 flags.DEFINE_string(
@@ -160,11 +164,8 @@ flags.DEFINE_float(
 flags.DEFINE_float(
     "weight_decay_rate", default=5e-4,
     help="Weight decay rate.")
-flags.DEFINE_float(
-    "min_lr_ratio", default=0.004,
-    help="Minimum ratio learning rate.")
 flags.DEFINE_integer(
-    "warmup_steps", default=20000,
+    "warmup_steps", default=0,
     help="Number of steps for linear lr warmup.")
 
 
@@ -289,6 +290,11 @@ def anneal_sup_loss(sup_logits, sup_labels, sup_loss, global_step, metric_dict):
   return sup_loss, avg_sup_loss
 
 
+def _scaffold_fn(restore_vars_dict):
+  saver = tf.train.Saver(restore_vars_dict, max_to_keep=10000)
+  return tf.train.Scaffold(saver=saver)
+
+
 def get_ent(logits, return_mean=True):
   log_prob = tf.nn.log_softmax(logits, axis=-1)
   prob = tf.exp(log_prob)
@@ -392,9 +398,21 @@ def get_model_fn(hparams):
           max([len(v.name) for v in tf.trainable_variables()]))
       for v in tf.trainable_variables():
         tf.logging.info(format_str.format(v.name, v.get_shape()))
+    if FLAGS.moving_average_decay > 0.:
+      ema = tf.train.ExponentialMovingAverage(
+          decay=FLAGS.moving_average_decay)
+      ema_vars = utils.get_all_variable()
 
     #### Evaluation mode
     if mode == tf.estimator.ModeKeys.EVAL:
+      if FLAGS.moving_average_decay > 0:
+        restore_vars_dict = ema.variables_to_restore(ema_vars)
+        scaffold_fn = functools.partial(
+            _scaffold_fn,
+            restore_vars_dict=restore_vars_dict) if FLAGS.moving_average_decay > 0 else None
+      else:
+        scaffold_fn = None
+
       #### Metric function for classification
       def metric_fn(per_example_loss, label_ids, logits):
         # classification loss & accuracy
@@ -416,7 +434,9 @@ def get_model_fn(hparams):
       eval_spec = tf.contrib.tpu.TPUEstimatorSpec(
           mode=mode,
           loss=total_loss,
-          eval_metrics=eval_metrics)
+          eval_metrics=eval_metrics,
+          scaffold_fn=scaffold_fn,
+      )
 
       return eval_spec
 
@@ -428,11 +448,8 @@ def get_model_fn(hparams):
       warmup_lr = 0.0
 
     # decay the learning rate using the cosine schedule
-    decay_lr = tf.train.cosine_decay(
-        FLAGS.learning_rate,
-        global_step=global_step-FLAGS.warmup_steps,
-        decay_steps=FLAGS.train_steps-FLAGS.warmup_steps,
-        alpha=FLAGS.min_lr_ratio)
+    lrate = tf.clip_by_value(tf.to_float(global_step-FLAGS.warmup_steps) / (FLAGS.train_steps-FLAGS.warmup_steps), 0, 1)
+    decay_lr = FLAGS.learning_rate * tf.cos(lrate * (7. / 8) * np.pi / 2)
 
     learning_rate = tf.where(global_step < FLAGS.warmup_steps,
                              warmup_lr, decay_lr)
@@ -451,6 +468,9 @@ def get_model_fn(hparams):
     with tf.control_dependencies(update_ops):
       train_op = optimizer.apply_gradients(
           zip(gradients, variables), global_step=tf.train.get_global_step())
+    if FLAGS.moving_average_decay > 0:
+      with tf.control_dependencies([train_op]):
+        train_op = ema.apply(ema_vars)
 
     #### Creating training logging hook
     # compute accuracy
@@ -499,6 +519,8 @@ def train(hparams):
   ##### Create input function
   if FLAGS.unsup_ratio == 0:
     FLAGS.aug_copy = 0
+  else:
+    assert FLAGS.aug_copy > 0, "Please specify aug_copy"
   if FLAGS.dev_size != -1:
     FLAGS.do_train = True
     FLAGS.do_eval = True

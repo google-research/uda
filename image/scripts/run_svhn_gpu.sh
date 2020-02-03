@@ -14,29 +14,29 @@
 # limitations under the License.
 #!/bin/bash
 
-train_tpu_name=node-1 # change this
-eval_tpu_name=node-2 # change this
-model_dir=gs://qizhex/uda/image/ckpt/tpu_32_core  # change this
-
 task_name=svhn
-data_dir=gs://uda_model/image/proc_data/${task_name}
 
+# UDA accuracy:
+# 4000: 97.72 +- 0.10
+# 2000: 97.80 +- 0.06
+# 1000: 97.77 +- 0.07
+# 500: 97.73 +- 0.09
+# 250: 97.28 +- 0.40
 
-# 4000, 2000, 1000, 500, 250
 for sup_size in 4000 2000 1000 500 250;
 do
   python main.py \
-    --use_tpu=True \
+    --use_tpu=False \
     --do_train=True \
-    --do_eval=False \
-    --tpu=${train_tpu_name} \
+    --do_eval=True \
     --task_name=${task_name} \
     --sup_size=${sup_size} \
-    --data_dir=${data_dir} \
-    --model_dir=${model_dir} \
-    --unsup_ratio=40 \
-    --weight_decay_rate=5e-4 \
-    --tsa=linear_schedule \
-    --learning_rate=0.05 \
+    --unsup_ratio=7 \
+    --train_batch_size=64 \
+    --data_dir=data/proc_data/${task_name} \
+    --model_dir=ckpt/cifar10_gpu_${sup_size} \
+    --train_steps=500000 \
+    --uda_confidence_thresh=0.8 \
+    --uda_softmax_temp=0.4 \
     $@
 done

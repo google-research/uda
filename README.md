@@ -21,7 +21,7 @@ CIFAR-10 with 4,000 labeled examples and SVHN with 1,000 labeled examples:
 Model            | CIFAR-10     | SVHN
 ---------------- | :----------: | :----------:
 ICT (Prev. SOTA) | 7.66±.17     | 3.53±.07
-UDA              | **4.89±.19** | **2.55±.09**
+UDA              | **4.31±.08** | **2.28±.10**
 
 It leads to significant improvements on ImageNet with 10% labeled data.
 
@@ -52,6 +52,56 @@ The code is tested on Python 2.7 and Tensorflow 1.13. After installing
 Tensorflow, run the following command to install dependencies:
 ```shell
 pip install --user absl-py
+```
+
+## Image classification
+
+### Preprocessing
+
+We generate 100 augmented examples for every original example. To download all
+the augmented data, go to the *image* directory and run
+
+```shell
+AUG_COPY=100
+bash scripts/download_cifar10.sh ${AUG_COPY}
+```
+
+Note that you need 120G disk space for all the augmented data. To save space,
+you can set AUG_COPY to a smaller number such as 30.
+
+Alternatively, you can generate the augmented examples yourself by running
+
+```shell
+AUG_COPY=100
+bash scripts/preprocess.sh --aug_copy=${AUG_COPY}
+```
+
+### CIFAR-10 with 250, 500, 1000, 2000, 4000 examples on GPUs
+
+GPU command:
+
+```shell
+# UDA accuracy: 
+# 4000: 95.68 +- 0.08
+# 2000: 95.27 +- 0.14
+# 1000: 95.25 +- 0.10
+# 500: 95.20 +- 0.09
+# 250: 94.57 +- 0.96
+bash scripts/run_cifar10_gpu.sh --aug_copy=${AUG_COPY}
+```
+
+### SVHN with 250, 500, 1000, 2000, 4000 examples on GPUs
+
+
+```shell
+# UDA accuracy:
+# 4000: 97.72 +- 0.10
+# 2000: 97.80 +- 0.06
+# 1000: 97.77 +- 0.07
+# 500: 97.73 +- 0.09
+# 250: 97.28 +- 0.40
+
+bash scripts/run_svhn_gpu.sh --aug_copy=${AUG_COPY}
 ```
 
 ## Text classifiation
@@ -147,51 +197,6 @@ and worker_id arguments in run.sh. For example, when replicas=3, we divide the
 data into three parts, and each run.sh will only process one part according to
 the worker_id.
 
-## Image classification
-
-### Preprocessing
-
-We generate 100 augmented examples for every original example. To download all
-the augmented data, go to the *image* directory and run
-
-```shell
-AUG_COPY=100
-bash scripts/download_cifar10.sh ${AUG_COPY}
-```
-
-Note that you need 120G disk space for all the augmented data. To save space,
-you can set AUG_COPY to a smaller number. For example, setting *aug_copy* to 30
-and 10 will leads to an accuracy of 94.30 and 93.64 respectively on CIFAR-10.
-
-Alternatively, you can generate the augmented examples yourself by running
-
-```shell
-AUG_COPY=100
-bash scripts/preprocess.sh --aug_copy=${AUG_COPY}
-```
-
-### CIFAR-10 with 250, 500, 1000, 2000, 4000 examples
-
-GPU command:
-
-```shell
-# UDA accuracy: 
-# 4000: 95.11 +- 0.19
-# 2000: 94.80 +- 0.09
-# 1000: 94.45 +- 0.16
-# 500: 94.01 +- 0.23
-# 250: 92.77 +- 1.07
-bash scripts/run_cifar10_gpu.sh --aug_copy=${AUG_COPY}
-```
-
-### SVHN with 1,000 examples
-
-Google Cloud TPU v3-32/v3-32 Pod command:
-
-```shell
-# UDA accuracy: 97.1% - 97.8%
-bash scripts/run_svhn_tpu_32_core.sh --aug_copy=${AUG_COPY}
-```
 
 ## General guidelines for setting hyperparameters:
 

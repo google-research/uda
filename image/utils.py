@@ -99,3 +99,14 @@ def construct_scalar_host_call(
   other_tensors = [tf.reshape(metric_dict[key], [-1]) for key in metric_names]
 
   return host_call_fn, [global_step_tensor] + other_tensors
+
+
+def get_all_variable():
+  var_list = tf.trainable_variables() + tf.get_collection('moving_vars')
+  for v in tf.global_variables():
+    # We maintain ema for batch norm moving mean and variance as well.
+    if 'moving_mean' in v.name or 'moving_variance' in v.name:
+      var_list.append(v)
+  var_list = list(set(var_list))
+  var_list = sorted(var_list, key=lambda var: var.name)
+  return var_list
