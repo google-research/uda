@@ -12,20 +12,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-GS_DIR = gs://bewgle-data/UDA-tpu-py3
-gsutil -m rsync -r . $GS_DIR
 python main.py \
-  --tpu_name= \
+  --use_tpu=False \
   --do_train=True \
   --do_eval=True \
-  --sup_train_data_dir=$GS_DIR/data/proc_data/IMDB/train_20 \
-  --unsup_data_dir=$GS_DIR/data/proc_data/IMDB/unsup \
-  --eval_data_dir=$GS_DIR/data/proc_data/IMDB/dev \
-  --bert_config_file=$GS_DIR/pretrained_models/bert_base/bert_config.json \
-  --vocab_file=$GS_DIR/pretrained_models/bert_base/vocab.txt \
-  --init_checkpoint=$GS_DIR/pretrained_models/bert_base/bert_model.ckpt \
+  --sup_train_data_dir=data/proc_data/IMDB/train_20 \
+  --unsup_data_dir=data/proc_data/IMDB/unsup \
+  --eval_data_dir=data/proc_data/IMDB/dev \
+  --bert_config_file=pretrained_models/bert_base/bert_config.json \
+  --vocab_file=pretrained_models/bert_base/vocab.txt \
+  --init_checkpoint=pretrained_models/bert_base/bert_model.ckpt \
   --task_name=IMDB \
-  --model_dir=$GS_DIR/ckpt/base_uda \
+  --model_dir=ckpt/base_uda \
   --num_train_steps=10000 \
   --learning_rate=2e-05 \
   --num_warmup_steps=1000 \
