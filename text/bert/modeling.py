@@ -312,7 +312,10 @@ def get_activation(activation_string):
 
   # We assume that anything that's not a string is already an activation
   # function, so we just return it.
-  if not isinstance(activation_string, (str, unicode)):
+
+  if six.PY2 and not isinstance(activation_string, (str, unicode)):
+    return activation_string
+  elif six.PY3 and not isinstance(activation_string, str):
     return activation_string
 
   if not activation_string:
@@ -964,7 +967,9 @@ def assert_rank(tensor, expected_rank, name=None):
     name = tensor.name
 
   expected_rank_dict = {}
-  if isinstance(expected_rank, (int, long)):
+  if six.PY2 and isinstance(expected_rank, (int, long)):
+    expected_rank_dict[expected_rank] = True
+  elif six.PY3 and isinstance(expected_rank, int):
     expected_rank_dict[expected_rank] = True
   else:
     for x in expected_rank:

@@ -34,14 +34,19 @@ def load_vocab(vocab_file):
   """Loads a vocabulary file into a dictionary."""
   vocab = collections.OrderedDict()
   index = 0
-  with open_reader(vocab_file) as reader:
-    while True:
-      token = reader.readline()
-      if not token:
-        break
-      token = token.strip()
-      vocab[token] = index
-      index += 1
+  if six.PY2:
+    reader = open_reader(vocab_file)
+  else:
+    reader = tf.gfile.GFile(vocab_file, "r")
+
+  while True:
+    token = reader.readline()
+    if not token:
+      break
+    token = token.strip()
+    vocab[token] = index
+    index += 1
+  reader.close()
   return vocab
 
 
@@ -265,11 +270,12 @@ def _is_punctuation(char):
 
 def _convert_to_unicode_or_throw(text):
   """Converts `text` to Unicode (if it's not already), assuming utf-8 input."""
-  if isinstance(text, str):
-    text = text.decode("utf-8", "ignore")
-  if not isinstance(text, unicode):
-    raise ValueError("`text` must be of type `unicode` or `str`, but is "
-                     "actually of type: %s" % (type(text).__name__))
+  if six.PY2:
+    if isinstance(text, str):
+      text = text.decode("utf-8", "ignore")
+    if not isinstance(text, unicode):
+      raise ValueError("`text` must be of type `unicode` or `str`, but is "
+                      "actually of type: %s" % (type(text).__name__))
   return text
 
 
