@@ -251,7 +251,7 @@ def training_input_fn_builder(
 
     if len(dataset_list) > 1:
       d = tf.data.Dataset.zip(tuple(dataset_list))
-      d = d.map(flatten_input)
+      d = d.map(flatten_input,num_parallel_calls=tf.data.experimental.AUTOTUNE)
     else:
       d = dataset_list[0]
 

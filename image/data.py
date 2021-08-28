@@ -198,7 +198,7 @@ def get_input_fn(
 
     if len(datasets) > 1:
       dataset = tf.data.Dataset.zip(tuple(datasets))
-      dataset = dataset.map(flatten_input)
+      dataset = dataset.map(flatten_input,num_parallel_calls=tf.data.experimental.AUTOTUNE)
     else:
       dataset = datasets[0]
 
